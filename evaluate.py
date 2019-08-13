@@ -65,7 +65,7 @@ def main():
     df_label, item_list = prepare_data()
     df_pred = predict(model, item_list)
 
-    evaluate(df_label, df_pred)
+    evaluate_mrr(df_label, df_pred)
 
 
 if __name__ == '__main__':
