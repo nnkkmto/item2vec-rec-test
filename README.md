@@ -4,7 +4,9 @@
 
 以下論文が実際適用他のケースでも、普通のword2vecによるレコメンドよりも有効なのか検証
 
-※ 普通のword2vecによるレコメンド：sequenceをユニークにしない、window数を全てのsequence対象にするようにしない
+※ 普通のword2vecによるレコメンド
+- sequenceをユニークにしない
+- window数を全てのsequence対象にするようにしない
 
 https://arxiv.org/abs/1603.04259
 
