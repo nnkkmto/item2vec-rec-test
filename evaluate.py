@@ -43,10 +43,10 @@ def predict(model, item_list):
 def evaluate_mrr(df_label, df_pred):
 
     df = pd.merge(df_label, df_pred, on=['product_id', 'label'], how='left')
-    print(df)
+
     n = len(df)
 
-    df_calc = df[~df.rank.isnull()]
+    df_calc = df.dropna()
     print(df_calc)
     df_calc['calc'] = 1 / df.rank
     print(df_calc)

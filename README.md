@@ -12,13 +12,29 @@ https://arxiv.org/abs/1603.04259
 
 Item2Vec: Neural Item Embedding for Collaborative Filtering
 
+### 想定ケース
+
+論文内にもあるように、implicitかつセッション単位のデータにおける、item to itemのレコメンデーションを想定
+
+### 使用データ
+
+以下の、Instacartでのユーザー単位のオーダーデータを使用
+
+上記のように、item2vecはセッションにおけるレコメーンデーションを想定しているため、
+
+オーダーをセッションとして考え、ユーザー単位でのレコメンデーションは行わない
+
+https://tech.instacart.com/3-million-instacart-orders-open-sourced-d40d29ead6f2
+
+> “The Instacart Online Grocery Shopping Dataset 2017”, Accessed from https://www.instacart.com/datasets/grocery-shopping-2017 on 2019/08/13
+
 ## セットアップ
 
 ### データ準備
 
 以下のデータをダウンロードし、data以下に.tar.gzのまま配置
 
-https://tech.instacart.com/3-million-instacart-orders-open-sourced-d40d29ead6f2
+https://www.instacart.com/datasets/grocery-shopping-2017
 
 ### 学習・テストデータ、モデル作成
 
