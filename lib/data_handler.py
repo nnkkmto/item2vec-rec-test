@@ -8,6 +8,11 @@ def load_data(filepath, columns):
     df = df[columns]
     df = df.fillna('').astype(str)
 
+    # criteoデータセット用の欠損値削除
+    for column in columns:
+        df = df[df[column] != '-1']
+        df = df[df[column] != '0']
+
     return df
 
 

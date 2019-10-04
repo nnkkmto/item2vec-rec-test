@@ -3,14 +3,22 @@ import os
 import tarfile
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-
-def initialize_data(tarfile_path, directory, filename):
+def initialize_data_instacart(tarfile_path, directory, filename):
 
     if not (os.path.isfile(os.path.join(directory, filename+'.csv')) and
             os.path.isfile(os.path.join(directory, filename+'_test.csv'))):
         unpack_tar_gz(tarfile_path, directory)
-        make_data(directory, filename)
+        make_data_instacart(directory, filename)
+
+
+def initialize_data_criteo(tarfile_path, directory, filename):
+
+    if not (os.path.isfile(os.path.join(directory, filename+'.csv')) and
+            os.path.isfile(os.path.join(directory, filename+'_test.csv'))):
+        unpack_tar_gz(tarfile_path, directory)
+        make_data_criteo(directory, filename)
 
 
 def unpack_tar_gz(tarfile_path, directory):
@@ -19,7 +27,27 @@ def unpack_tar_gz(tarfile_path, directory):
         tf.extractall(path=directory)
 
 
-def make_data(directory, filename):
+def make_data_criteo(directory, filename):
+
+    columns = ['Sale', 'SalesAmountInEuro', 'time_delay_for_conversion', 'click_timestamp', 'nb_clicks_1week',
+               'product_price', 'product_age_group', 'device_type', 'audience_id', 'product_gender', 'product_brand',
+               'product_category(1-7)', 'product_country', 'product_id', 'product_title', 'partner_id', 'user_id']
+
+    data_dir = os.path.join(directory, 'Criteo_Conversion_Search')
+    df = pd.read_csv(data_dir+'/CriteoSearchData', sep='\t', header=None, names=columns)
+
+    # user単位でtrainとtestに分割
+    df_users = df[['user_id']]
+    users_train, users_test = train_test_split(df_users, test_size=0.3)
+
+    df_train = pd.merge(df, users_train, how='inner', on='user_id')
+    df_test = pd.merge(df, users_test, how='inner', on='user_id')
+
+    df_train.to_csv(os.path.join(directory, filename+'.csv'))
+    df_test.to_csv(os.path.join(directory, filename+'_test.csv'))
+
+
+def make_data_instacart(directory, filename):
 
     data_dir = os.path.join(directory, 'instacart_2017_05_01')
 

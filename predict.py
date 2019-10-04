@@ -1,3 +1,9 @@
+"""
+
+定性的評価（instacartのみ）
+
+"""
+
 
 import os
 import argparse
@@ -10,8 +16,8 @@ from lib import data_initializer
 
 
 def prepare_master():
-    data_path = 'data/unpacked/data.csv'
-    master_path = 'data/unpacked/master.csv'
+    data_path = 'data/instacart/unpacked/data.csv'
+    master_path = 'data/instacart/unpacked/master.csv'
     columns = ['product_id', 'product_name', 'aisle', 'department']
 
     data_initializer.initialize_master(data_path, master_path, columns)
@@ -21,7 +27,7 @@ def prepare_master():
 
 
 def load_models():
-    model_dir = 'model/'
+    model_dir = 'model/instacart/'
     model_names = ['simple_w2v', 'i2v']
 
     model_dict = {}

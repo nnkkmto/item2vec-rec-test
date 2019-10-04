@@ -1,4 +1,5 @@
-data/unpacked/
+data/instacart/unpacked/
+data/criteo/unpacked/
 data/*.gz
 
 .DS_Store

@@ -32,9 +32,15 @@ https://tech.instacart.com/3-million-instacart-orders-open-sourced-d40d29ead6f2
 
 ### データ準備
 
-以下のデータをダウンロードし、data以下に.tar.gzのまま配置
+以下2つのデータをダウンロードし、data以下に.tar.gzのまま配置
+
+instacart
 
 https://www.instacart.com/datasets/grocery-shopping-2017
+
+criteo
+
+https://ailab.criteo.com/criteo-sponsored-search-conversion-log-dataset/
 
 ### 学習・テストデータ、モデル作成
 
@@ -45,6 +51,8 @@ https://www.instacart.com/datasets/grocery-shopping-2017
 `python predict.py --item '対象アイテムID'`
 
 ※ マスタデータ作成はtrain.pyに入れるもしくは他ファイルで行うように変更予定
+
+※ instacartのみ用意
 
 ### 定量評価
 

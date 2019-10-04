@@ -8,10 +8,10 @@ from lib import data_handler
 from lib import data_initializer
 
 
-def prepare_data():
+def prepare_data_instacart():
 
     tarfile_path = 'data/instacart_online_grocery_shopping_2017_05_01.tar.gz'
-    data_dir = 'data/unpacked'
+    data_dir = 'data/instacart/unpacked'
     data_filename = 'data'
 
     columns = ['user_id', 'order_id', 'order_number', 'add_to_cart_order', 'product_id']
@@ -22,10 +22,36 @@ def prepare_data():
     seq_min_count = 2
 
     print('initializing data')
-    data_initializer.initialize_data(tarfile_path, data_dir, data_filename)
+    data_initializer.initialize_data_instacart(tarfile_path, data_dir, data_filename)
 
     print('loading data')
     df = data_handler.load_data(os.path.join(data_dir, data_filename+'.csv'), columns)
+
+    print('making sentences')
+    sentence_sequence, sentence_set = data_handler.make_sentence(
+        df, sort_columns, group_col, seq_col, seq_min_count)
+
+    return sentence_sequence, sentence_set
+
+
+def prepare_data_criteo():
+
+    tarfile_path = 'data/Criteo_Conversion_Search.tar.gz'
+    data_dir = 'data/criteo/unpacked'
+    data_filename = 'data'
+
+    columns = ['click_timestamp', 'product_id', 'user_id']
+
+    sort_columns = ['click_timestamp']
+    group_col = 'user_id'
+    seq_col = 'product_id'
+    seq_min_count = 2
+
+    print('initializing data')
+    data_initializer.initialize_data_criteo(tarfile_path, data_dir, data_filename)
+
+    print('loading data')
+    df = data_handler.load_data(os.path.join(data_dir, data_filename + '.csv'), columns)
 
     print('making sentences')
     sentence_sequence, sentence_set = data_handler.make_sentence(
@@ -61,20 +87,37 @@ def train(sentences, is_max_window):
 
 def main():
 
-    sentence_sequence, sentence_set = prepare_data()
+    # print('----- instacart -----')
+    # sentence_sequence, sentence_set = prepare_data_instacart()
+    #
+    # print('training simple w2v')
+    # model_w2v = train(sentence_sequence, is_max_window=False)
+    # model_w2v.save('model/instacart/simple_w2v.model')
+    #
+    # # print('training max window w2v')
+    # # model_w2v_max_window = train(sentence_sequence, is_max_window=True)
+    # # model_w2v_max_window.save('model/instacart/max_window_w2v.model')
+    #
+    # print('training i2v')
+    # logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
+    # model_i2v = train(sentence_set, is_max_window=True)
+    # model_i2v.save('model/instacart/i2v.model')
+
+    print('----- criteo -----')
+    sentence_sequence, sentence_set = prepare_data_criteo()
 
     print('training simple w2v')
     model_w2v = train(sentence_sequence, is_max_window=False)
-    model_w2v.save('model/simple_w2v.model')
+    model_w2v.save('model/criteo/simple_w2v.model')
 
-    print('training max window w2v')
-    model_w2v_max_window = train(sentence_sequence, is_max_window=True)
-    model_w2v_max_window.save('model/max_window_w2v.model')
+    # print('training max window w2v')
+    # model_w2v_max_window = train(sentence_sequence, is_max_window=True)
+    # model_w2v_max_window.save('model/criteo/max_window_w2v.model')
 
     print('training i2v')
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
     model_i2v = train(sentence_set, is_max_window=True)
-    model_i2v.save('model/i2v.model')
+    model_i2v.save('model/criteo/i2v.model')
 
 
 if __name__ == '__main__':
