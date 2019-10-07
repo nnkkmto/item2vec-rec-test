@@ -39,18 +39,21 @@ def prepare_data_criteo():
     df = df.sort_values(by=['click_timestamp']).reset_index()
     df['time_sort'] = df.index
     df['order_id'] = df.groupby(by='user_id')['time_sort'].rank(method='first')
+    df = df[df.order_id <= 200.]
 
     item_list = df.product_id.unique()
 
     df_label_mrr = df.rename(columns={'product_id': 'label'})
     df_label_mrr['product_id'] = df_label_mrr['label'].shift(1)
-    df_label_mrr = df_label_mrr[df_label_mrr.order_id != '1']
+    df_label_mrr = df_label_mrr[df_label_mrr.order_id != 1.]
     df_label_mrr = df_label_mrr[['product_id', 'label']]
+    print(df_label_mrr)
 
     df_label_map = df.rename(columns={'product_id': 'label'})
     df_label_map = df_label_map[['user_id', 'label']]
     df_label_map = pd.merge(df[['user_id', 'product_id']], df_label_map, on='user_id', how='left')
     df_label_map = df_label_map[df_label_map.product_id != df_label_map.label]
+    print(df_label_map)
 
     return df_label_mrr, df_label_map, item_list
 
@@ -81,22 +84,46 @@ def evaluate_mrr(df_label, df_pred):
     n = len(df)
 
     df_calc = df.dropna()
+    print(df_calc)
+
     df_calc['calc'] = 1 / df_calc['rank'].astype(int)
+    print(df_calc)
     rr = df_calc.calc.sum()
     mrr = rr / n
 
     print(mrr)
 
 
-def evaluate_map(df_label, df_pred):
+def evaluate_map_instacart(df_label, df_pred):
 
-    # 最小単位はorder_id*product_idなので、修正
     df = pd.merge(df_label, df_pred, on=['product_id', 'label'], how='left')
 
     n = len(df[['order_id', 'product_id']].drop_duplicates())
 
     df = df.dropna()
+    df = df.drop_duplicates()
+
+    # order_id*product_id単位でAP計算
     df['correct'] = df.groupby(by=['order_id', 'product_id'])['rank'].rank(ascending=True)
+    df['ap'] = df.correct / df['rank'].astype(int)
+    ap = df.ap.sum()
+
+    map_metr = ap / n
+    print(map_metr)
+
+
+def evaluate_map_criteo(df_label, df_pred):
+
+    # 最小単位はorder_id*product_idなので、修正
+    df = pd.merge(df_label, df_pred, on=['product_id', 'label'], how='left')
+
+    n = len(df[['user_id', 'product_id']].drop_duplicates())
+
+    df = df.dropna()
+    df = df.drop_duplicates()
+
+    # user_id*product_id単位でAP計算
+    df['correct'] = df.groupby(by=['user_id', 'product_id'])['rank'].rank(ascending=True)
     df['ap'] = df.correct / df['rank'].astype(int)
     ap = df.ap.sum()
 
@@ -118,7 +145,7 @@ def main():
     #     df_pred = predict(model, item_list)
     #
     #     print(f'MAP: {model_name}\n')
-    #     evaluate_map(df_label_map, df_pred)
+    #     evaluate_map_instacart(df_label_map, df_pred)
     #
     #     print(f'MRR: {model_name}\n')
     #     evaluate_mrr(df_label_mrr, df_pred)
@@ -134,7 +161,7 @@ def main():
         df_pred = predict(model, item_list)
 
         print(f'MAP: {model_name}\n')
-        evaluate_map(df_label_map, df_pred)
+        evaluate_map_criteo(df_label_map, df_pred)
 
         print(f'MRR: {model_name}\n')
         evaluate_mrr(df_label_mrr, df_pred)
